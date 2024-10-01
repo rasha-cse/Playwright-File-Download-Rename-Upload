@@ -1,6 +1,6 @@
 {
     "LoginURL": "auth/login",
     "logout": "auth/logout",
-    "ifsp_url": "/states/ifsp/show/",
+    "module_url": "/states/module/show/",
     "doc_storage_link": "/ma/doc/individual?backLink=%2fdoc%2findividualList&backType=0&testForm=false&pgmId=&individualId="
 }
