@@ -1,25 +1,6 @@
 {
     "LoginURL": "auth/login",
-    "CreateNewProviderURL": "ma/admin2/provider?backType=1&backLink=%2fnewfpage%2fswitchFirstPage",
-    "CreateNewUserURL": "ma/admin2/userForm",
-    "CreateIndividualIntakeForm": "ma/client/create?coreDataAccess=true&backLink=%2fnewfpage%2fswitchFirstPage",
-    "ProviderListURL": "ma/admin2/providerList?forwardUrl=provider&backType=1&backLink=%2fnewfpage%2fswitchFirstPage",
-    "DataAdminListURL": "ma/admin2/providerList?forwardUrl=dataAdminList",
-    "UserListFromUserPrivilegeManagePageURL": "/admin/privilege/user/userList.xhtml?listType=USER_PRIVILEGE",
-    "UserList": "/admin/privilege/user/userList.xhtml?listType=ALL_USER",
     "logout": "auth/logout",
-    "ProviderListURLfromSuperAdmin": "ma/admin2/providerList?forwardUrl=dataAdminList",
-    "ProviderListURLfromAdvanceConfigProviderAssignment": "ma/admin2/providerList?forwardUrl=acfConfigSetup",
-    "ManageCaseloadURL": "admin/privilege/caseload/caseloadList.xhtml",
-    "ManageSuperRoleURL": "/admin/privilege/superrole/superRoleList.xhtml",
-    "advanceConfigModule": {
-        "acfConfigList": "/ma/acf/typeList",
-        "providerAssignment": "ma/admin2/providerList?forwardUrl=acfConfigSetup"
-    },
-    "IndividualTabURL": "/ma/newfpage/individual",
-    "IndividualListFromAssessmentForm": "ma/asc/individualList",
-    "ToDoTabOfUserURL": "/ma/newfpage/worklist",
-    "AssessmentDocumentSearchPageURL": "/ma/asc/assessmentSearch?backLink=%2Fnewfpage%2FswitchFirstPage&backType=1",
     "ifsp_url": "/states/ifsp/show/",
     "doc_storage_link": "/ma/doc/individual?backLink=%2fdoc%2findividualList&backType=0&testForm=false&pgmId=&individualId="
 }
