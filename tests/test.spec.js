@@ -16,7 +16,7 @@ let dataPrep;
 let methods;
 let sheet0 = [];
 
-test.describe.serial("IFSP Download & Document Storage Upload", () => {
+test.describe.serial("Module Download & Document Storage Upload", () => {
     let loginPage;
 
     let savedCookies;
@@ -30,29 +30,22 @@ test.describe.serial("IFSP Download & Document Storage Upload", () => {
 
       await page.goto(urlData.LoginURL, {waitUntil: "domcontentloaded"}); //{ timeout: 2 * 60 * 1000 } 
       await loginPage.login(superAdminData.username, superAdminData.providerCode, superAdminData.password)
-      //expect(await page.url()).toContain('newfpage/admin');
       savedCookies = await page.context().cookies()
-
-      //console.log("inside beforeALL")
 
       await context.close();
     });
 
     test.beforeEach(async ({ context, page }) => {
         await context.addCookies(savedCookies);
-
-        //console.log("inside beforeEach")
     });
 
-test('IFSP Download', async ({ page }) => {
-  //console.log("inside test")
-
+test('Module Download, Rename & Upload', async ({ page }) => {
   let start = performance.now();
   dataPrep = new DataPreparation(page);
   methods = new Methods(page);
 
 
-  await page.goto(urlData.ifsp_url + "60757845");
+  await page.goto(urlData.module_url + "60757845");
 
 //   fs.mkdir('Downloads/apple', { recursive: true }, (err) => {
 //     if (err) throw err;
