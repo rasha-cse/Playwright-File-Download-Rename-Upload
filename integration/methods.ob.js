@@ -10,14 +10,14 @@ exports.Methods = class Methods {
         this.page = page
     }
 
-    async download(downloadLinkText) {
+    async download(filePrefix, downloadLinkText) {
         //Start waiting for download before clicking. Note no await.
         const downloadPromise = this.page.waitForEvent('download');
         await this.page.getByText(downloadLinkText).click();
         const download = await downloadPromise;
 
         // Wait for the download process to complete and save the downloaded file somewhere.
-        await download.saveAs('Downloads/' + download.suggestedFilename());
+        await download.saveAs('Downloads/'+ filePrefix + "/" + download.suggestedFilename());
     }
 
     async renameAndUpload(filePrefix, data) {
@@ -34,12 +34,12 @@ exports.Methods = class Methods {
         await this.page.locator('.input-group-addon').click(); //clicking Browse
         const fileChooser = await fileChooserPromise;
 
-        const fileBuffer = fs.readFileSync('Downloads/' + filePrefix + data[2] + '.pdf')
-        const newFileName= filePrefix + data[1] + '.pdf'
+        const fileBuffer = fs.readFileSync('Downloads/' + filePrefix + data[1] + '.zip')
+        const newFileName= filePrefix + data[1] + '.zip'
 
         await fileChooser.setFiles({
         name: newFileName,
-        mimeType: 'application/pdf',
+        mimeType: 'application/zip',
         buffer: fileBuffer
         });
 
@@ -53,8 +53,8 @@ exports.Methods = class Methods {
     }
 
     async log_doc_storage_formids(rowCount, filePrefix, docStorageformId, data) {
-        console.log('Row: ' + (rowCount+2) + ", " + "IFSP ID: " + data[1] + ", " + filePrefix + ": " + docStorageformId)
+        console.log('Row: ' + (rowCount+2) + ", " + "Module ID: " + data[1] + ", " + filePrefix + ": " + docStorageformId)
 
-        fs.appendFileSync('fixtures/log_file_docStorageFormIds.log', "IFSP ID: " + data[1] + ", " + filePrefix + ": " + docStorageformId + '\n')
+        fs.appendFileSync('fixtures/log_file_docStorageFormIds.log', "Module ID: " + data[1] + ", " + filePrefix + ": " + docStorageformId + '\n')
     }
 }
