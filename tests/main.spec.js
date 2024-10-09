@@ -4,6 +4,7 @@ const { test, expect } = require('@playwright/test');
 
 const xlsx = require('xlsx');
 const fs = require('fs');
+var zl = require("zip-lib");
 
 const { LoginPage } = require('../integration/pageObjects/loginPage.ob.js');
 const { DataPreparation } = require('../integration/dataPreparation.ob.js');
@@ -17,7 +18,7 @@ let dataPrep;
 let methods;
 let sheet0 = [];
 
-test.describe.serial("Module File Download & Document Storage Upload", () => {
+test.describe.serial("IFSP Download All PDFs & Document Storage Upload", () => {
     let loginPage;
 
     let savedCookies;
@@ -29,7 +30,7 @@ test.describe.serial("Module File Download & Document Storage Upload", () => {
 
       loginPage = new LoginPage(page);
 
-      await page.goto(urlData.LoginURL, { timeout: 2 * 60 * 1000 });
+      await page.goto(urlData.LoginURL, {waitUntil: "domcontentloaded"}); //{ timeout: 2 * 60 * 1000 } 
       await loginPage.login(superAdminData.username, superAdminData.providerCode, superAdminData.password)
       savedCookies = await page.context().cookies()
 
@@ -40,15 +41,13 @@ test.describe.serial("Module File Download & Document Storage Upload", () => {
         await context.addCookies(savedCookies);
     });
 
-test('Module File Download, Rename & Upload', async ({ page }) => {
+test('IFSP Download', async ({ page }) => {
 
   let start = performance.now();
   dataPrep = new DataPreparation(page);
   methods = new Methods(page);
 
-  sheet0 = await dataPrep.readExcelDataWithSheetName('fixtures/app_module_active_indv.xlsx', 'Export Worksheet')
-
-  //console.log(sheet0)
+  sheet0 = await dataPrep.readExcelDataWithSheetName('fixtures/state_app_ifsp_active_indv.xlsx', 'Export Worksheet')
 
   const rowCount = fs.readFileSync('fixtures/log_file_processedRows.log');
   let x = rowCount.toString().split(" ").pop();//.split('/n') //.trim() //[lines.length - 1]
@@ -60,27 +59,47 @@ test('Module File Download, Rename & Upload', async ({ page }) => {
 
   let data = sheet0[i]
 
-  //console.log("Client ID: " + data[0])
+  console.log("IFSP ID: " + data[1])
 
-  await page.goto(urlData.module_url + data[1]);
+  await page.goto(urlData.ifsp_url + data[1]); // "60757845"
 
-  await methods.download('Print Module')
-  await methods.download('Print ISP')
+  const attachments = page.locator("#fileAttachmentDiv").locator('div')
+
+  console.log(await attachments.count());
+
+  const folderName = "IFSP_" + data[1]
+
+  for (let i = 0; i < await attachments.count(); i++) {
+  ////------------------------- file download ------------------------ 
+    console.log(await attachments.nth(i).textContent());
+    const downloadPromise = page.waitForEvent('download');
+    await page.locator("#fileAttachmentDiv").locator('div').getByRole("link").nth(i).click();
+    const myFile = "new_name" + i +".pdf"
+    const download = await downloadPromise;
+
+    await download.saveAs('Downloads/' + folderName +'/' + myFile ); //+ download.suggestedFilename()
+  }
+  ////------------------------- file download ------------------------ 
+
+  await methods.download(folderName, 'Print IFSP')
+  await methods.download(folderName, 'Print ISP')
+
+  zl.archiveFolder('Downloads/' + folderName , "Downloads/" + folderName + ".zip")//.then(function () {
 
 
-await page.goto(urlData.doc_storage_link + data[0]) //9518097  data.client_id
+  await page.goto(urlData.doc_storage_link + data[0]) //9518097  data.client_id
 
-const docStorageIFSPformId = await methods.renameAndUpload('Module_of_', data) 
-await methods.log_doc_storage_formids(i, "Module", docStorageIFSPformId, data)
+  const docStorageIFSPformId = await methods.renameAndUpload('IFSP_', data) 
+  await methods.log_doc_storage_formids(i, "IFSP", docStorageIFSPformId, data)
 
-await page.getByText('Add New Document for this Individual').click()
-const docStorageISPformId = await methods.renameAndUpload('ISP_of_', data) 
-await methods.log_doc_storage_formids(i, "ISP", docStorageISPformId, data)
+  // await page.getByText('Add New Document for this Individual').click()
+  // const docStorageISPformId = await methods.renameAndUpload('ISP_of_', data) 
+  // await methods.log_doc_storage_formids(i, "ISP", docStorageISPformId, data)
 
-fs.appendFileSync('fixtures/log_file_processedRows.log',  "Module ID: " + data[1] + ", " + 'Row: ' + (i+2) + '\n')
+  fs.appendFileSync('fixtures/log_file_processedRows.log',  "IFSP ID: " + data[1] + ", " + 'Row: ' + (i+2) + '\n')
 
-let timeTaken = performance.now() - start;
-console.log("Total time taken : " + timeTaken/60000 + " minutes");
+  let timeTaken = performance.now() - start;
+  console.log("Total time taken : " + timeTaken/60000 + " minutes");
   
   //await new Promise(()=>{})
   //await page.waitForTimeout(15000)
